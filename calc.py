@@ -79,6 +79,23 @@ def on_mouse_down(pos, button):
     pass
 
 def draw():
-    pass
+    screen.fill(BACKGROUND_COLOR)
+
+    screen.draw.filled_rect(
+        Rect((BUTTON_PADDING, BUTTON_PADDING), (WIDTH - 2 * BUTTON_PADDING, 80)),
+        DISPLAY_COLOR
+    )
+
+    for button in buttons:
+        rect = calculate_button_rect(button)
+        color = get_button_color(button, False)
+
+        screen.draw.filled_rect(rect, color)
+        screen.draw.text(
+            button["text"],
+            center=rect.center,
+            fontsize=24,
+            color=TEXT_COLOR
+        )
 
 pgzrun.go()
