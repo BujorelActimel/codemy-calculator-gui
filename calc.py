@@ -1,5 +1,7 @@
 import pygame
-# import pgzrun
+import pgzrun
+import math
+import mate
 
 WIDTH = 300
 HEIGHT = 450
@@ -43,12 +45,14 @@ buttons = [
     {"text": "-", "x": 3, "y": 2, "action": "operation", "value": "subtract"},
     
     {"text": "0", "x": 0, "y": 3, "action": "number", "value": 0},
-    {"text": "C", "x": 1, "y": 3, "action": "clear", "value": "clear"},
+    {"text": "C", "x": 3, "y": 4, "action": "clear", "value": "clear"},
     {"text": "=", "x": 2, "y": 3, "action": "equals", "value": "equals"},
     {"text": "+", "x": 3, "y": 3, "action": "operation", "value": "add"},
 
     {"text": "x^2", "x": 0, "y": 4, "action": "operation", "value": "square"},
-    {"text": "sqrt", "x": 1, "y": 4, "action": "operation", "value": "sqrt"}
+    {"text": "sqrt", "x": 1, "y": 4, "action": "operation", "value": "sqrt"},
+    {"text": "x^x", "x": 2, "y": 4, "action": "operation", "value": "power"},
+    {"text": "π", "x": 1, "y": 3, "action": "number", "value": 3.14159}
 ]
 
 def calculate_button_rect(button):
@@ -98,6 +102,12 @@ def perform_operation():
         if current_value == 0:
             return "cannot divide by zero"
         result = stored_value / current_value
+    elif current_operation == "square":
+        result = stored_value * stored_value
+    elif current_operation == "sqrt":
+        result = math.sqrt(stored_value)
+    elif current_operation == "power":
+        result = mate.power(stored_value, current_value)
 
     if len(str(result)) > 20:
         return "result is too large"
@@ -181,4 +191,4 @@ def draw():
             color=TEXT_COLOR
         )
 
-# pgzrun.go()
+pgzrun.go()
