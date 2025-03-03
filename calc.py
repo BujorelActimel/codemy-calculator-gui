@@ -1,8 +1,8 @@
 import pygame
-import pgzrun
+# import pgzrun
 
 WIDTH = 300
-HEIGHT = 400
+HEIGHT = 450
 TITLE = "Calculator"
 
 BUTTON_WIDTH = 60
@@ -46,6 +46,9 @@ buttons = [
     {"text": "C", "x": 1, "y": 3, "action": "clear", "value": "clear"},
     {"text": "=", "x": 2, "y": 3, "action": "equals", "value": "equals"},
     {"text": "+", "x": 3, "y": 3, "action": "operation", "value": "add"},
+
+    {"text": "x^2", "x": 0, "y": 4, "action": "operation", "value": "square"},
+    {"text": "sqrt", "x": 1, "y": 4, "action": "operation", "value": "sqrt"}
 ]
 
 def calculate_button_rect(button):
@@ -70,13 +73,82 @@ def get_button_color(button, hovering):
         return BUTTON_HOVER_COLOR if hovering else BUTTON_COLOR
 
 def get_hovered_button():
-    pass
+    mouse_pos = pygame.mouse.get_pos()
+    for button in buttons:
+        rect = calculate_button_rect(button)
+        if rect.collidepoint(mouse_pos):
+            return button
+    return None
 
 def perform_operation():
-    pass
+    global stored_value, display_value, current_operation
+
+    if current_operation is None:
+        return display_value
+    
+    current_value = float(display_value)
+
+    if current_operation == "add":
+        result = stored_value + current_value
+    elif current_operation == "subtract":
+        result = stored_value - current_value
+    elif current_operation == "multiply":
+        result = stored_value * current_value
+    elif current_operation == "divide":
+        if current_value == 0:
+            return "cannot divide by zero"
+        result = stored_value / current_value
+
+    if len(str(result)) > 20:
+        return "result is too large"
+
+    if result == int(result):
+        return str(int(result))
+    else:
+        return str(result)
+
 
 def on_mouse_down(pos, button):
-    pass
+    global display_value, stored_value, current_operation, clear_on_next_input
+
+    if button != mouse.LEFT:
+        return
+    
+    hovered_button = get_hovered_button()
+    if not hovered_button:
+        return
+    
+    action = hovered_button["action"]
+    value = hovered_button["value"]
+
+    if action == "number":
+        if display_value == "0" or clear_on_next_input:
+            display_value = str(value)
+            clear_on_next_input = False
+        else:
+            display_value += str(value)
+    
+    elif action == "operation":
+        if current_operation is not None:
+            display_value = perform_operation()
+        
+        stored_value = float(display_value)
+        current_operation = value
+        clear_on_next_input = True
+
+    elif action == "equals":
+        if current_operation is not None:
+            display_value = perform_operation()
+            stored_value = 0
+            current_operation = None
+            clear_on_next_input = True
+    
+    elif action == "clear":
+        display_value = "0"
+        stored_value = 0
+        current_operation = None
+        clear_on_next_input = True
+
 
 def draw():
     screen.fill(BACKGROUND_COLOR)
@@ -86,9 +158,20 @@ def draw():
         DISPLAY_COLOR
     )
 
+    screen.draw.text(
+        display_value,
+        centerx=WIDTH//2,
+        centery=45,
+        fontsize=36,
+        color=TEXT_COLOR
+    )
+
+    hovered_button = get_hovered_button()
+
     for button in buttons:
         rect = calculate_button_rect(button)
-        color = get_button_color(button, False)
+        is_hovering = (hovered_button == button)
+        color = get_button_color(button, is_hovering)
 
         screen.draw.filled_rect(rect, color)
         screen.draw.text(
@@ -98,4 +181,4 @@ def draw():
             color=TEXT_COLOR
         )
 
-pgzrun.go()
+# pgzrun.go()
