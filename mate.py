@@ -9,7 +9,7 @@ def power(num: float, pow: float):
         return 1
 
     result = 1
-    for _ in range(pow):
+    for _ in range(int(pow)):
         result *= num
 
     return result
